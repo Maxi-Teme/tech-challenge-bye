@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bye-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bye
+  template:
+    metadata:
+      labels:
+        app: bye
+    spec:
+      containers:
+        - name: bye
+          image: __IMAGE__
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ENV
+              value: __ENV__

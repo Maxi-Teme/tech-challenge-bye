@@ -1,0 +1,45 @@
+name: Build and deploy
+on:
+  push:
+    branches:
+      - dev
+      - stg
+      - prod
+env:
+  ENV: ${{ github.ref_name }}
+  IMAGE_TAG: ${{ secrets.DOCKER_IMAGE_REGISTRY_URL }}/bye:${{ github.sha }}
+  KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
+  KUBE_CA: ${{ secrets.KUBE_CA }}
+  KUBE_TOKEN: ${{ secrets.KUBE_TOKEN }}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_TAG -f Dockerfile .
+
+      - name: Push Docker image to registry
+        run: docker push $IMAGE_TAG
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set kubectl config
+        run: |
+          sed -i -e "s|__KUBE_CA__|$KUBE_CA|g" \
+            -e "s|__KUBE_SERVER__|$KUBE_SERVER|g" \
+            -e "s|__KUBE_TOKEN__|$KUBE_TOKEN|g" \
+            kube.config
+
+      - name: Deploy
+        env:
+          KUBECONFIG: ./kube.config
+        run: |
+          sed -i -e "s|__IMAGE__|$IMAGE_TAG|g" -e "s|__ENV__|$ENV|g" deployment.yaml
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
