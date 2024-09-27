@@ -1,10 +1,8 @@
 name: Build and deploy
 on:
   push:
-    branches:
-      - dev
-      - stg
-      - prod
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
 env:
   ENV: ${{ github.ref_name }}
   IMAGE_TAG: ${{ secrets.DOCKER_IMAGE_REGISTRY_URL }}/bye:${{ github.sha }}
