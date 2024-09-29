@@ -22,6 +22,10 @@ func health(w http.ResponseWriter, _ *http.Request) {
 }
 
 func main() {
+	var PORT = os.Getenv("PORT")
+	if len(PORT) < 1 {
+		log.Fatal("ERROR: please provide environment variable 'PORT'")
+	}
 	var ENV = os.Getenv("ENV")
 	if len(ENV) < 1 {
 		log.Fatal("ERROR: please provide environment varialbe 'ENV'")
@@ -32,7 +36,7 @@ func main() {
 	http.Handle("/bye", hh)
 	http.HandleFunc("/health", health)
 
-	const addr = ":8000"
+	var addr = fmt.Sprintf(":%v", PORT)
 
 	fmt.Printf("HTTP server listening on %v\n", addr)
 	http.ListenAndServe(addr, nil)

@@ -1,4 +1,4 @@
-# bye - test service
+# bye - test app
 
 ## init
 
@@ -6,13 +6,17 @@
 
 ## build
 
-`go build main.go`
+`go build -o bye .`
 
-## prepare deployment
+## run
+
+`PORT=8000 ENV=local ./bye`
+
+## deploy locally
+
+### prepare
 
 `./get_envs.sh`
-
-## deploy
 
 ### dev
 

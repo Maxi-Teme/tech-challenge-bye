@@ -40,4 +40,3 @@ jobs:
         run: |
           sed -i -e "s|__IMAGE__|$IMAGE_TAG|g" -e "s|__ENV__|$ENV|g" deployment.yaml
           kubectl apply -f deployment.yaml
-          kubectl apply -f service.yaml
